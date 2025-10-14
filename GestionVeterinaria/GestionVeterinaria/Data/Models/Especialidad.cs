@@ -2,6 +2,7 @@ namespace GestionVeterinaria.Data.Models;
 
 public class Especialidad
 {
-    public String nombre { get; set; }
-    public String descripcion { get; set; }
+    public int EspecialidadId { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = string.Empty;
 }

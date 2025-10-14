@@ -2,8 +2,9 @@ namespace GestionVeterinaria.Data.Models;
 
 public class Tratamiento
 {
-    public string nombreTratamiento  { get; set; }
-    public  string tipoTratamiento { get; set; }
-    public string descripcionTratamiento { get; set; }
-    private List<string> medicamentos { get; set; }
+    public int TratamientoId { get; set; }
+    public string NombreTratamiento  { get; set; } = string.Empty;
+    public  string TipoTratamiento { get; set; } = string.Empty;
+    public string DescripcionTratamiento { get; set; } =  string.Empty;
+    private List<string> Medicamentos { get; set; } = new();
 }
