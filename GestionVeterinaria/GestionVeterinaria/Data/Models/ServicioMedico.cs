@@ -2,11 +2,13 @@ namespace GestionVeterinaria.Data.Models;
 
 public class ServicioMedico
 {
-    public DateTime fecha { get; set; }
-    public Veterinario veterinario { get; set; }
-    public String descripcion { get; set; } 
-    public Mascota mascota { get; set; }
-    public List<Tratamiento> tratamientos { get; set; }
+    public int ServicioMedicoId { get; set; }
+    public double Precio { get; set; }
+    public DateTime Fecha { get; set; } = DateTime.Now;
+    public string Descripcion { get; set; } = string.Empty;
     
-
+    public int VeterinariaId { get; set; }
+    public int MascotaId { get; set; }
+    public List<int> TratamientosId { get; set; } = new();
+    
 }
