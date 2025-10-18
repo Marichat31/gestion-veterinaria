@@ -13,8 +13,7 @@ public class DueñoService : IDueñoService
     {
         _context = context;
     }
-    
-    public DueñoDto ObtenerPorId(int id)
+    public DueñoDto? ObtenerPorId(int id)
     {
         var dueño = _context.Dueños.FindById(id);
         if (dueño == null)
@@ -35,8 +34,8 @@ public class DueñoService : IDueñoService
                     Nombre = mascota.Nombre,
                     Edad = mascota.Edad,
                     Peso = mascota.Peso,
-                    Especie = mascota.Especie,
-                    Raza = mascota.Raza,
+                    Especie = mascota.Especie ,
+                    Raza = mascota.Raza
                 });
             }
         }
@@ -54,13 +53,13 @@ public class DueñoService : IDueñoService
 
     public IEnumerable<DueñoDto> ObtenerTodos()
     {
-        var dueños = _context.Dueños.FindAll();
+        var dueños = _context.Dueños.FindAll().ToList();
         var dueñosDtos = new List<DueñoDto>();
-    
+        
         foreach (var dueño in dueños)
         {
             var mascotasDtos = new List<MascotaDto>();
-            
+
             foreach (var mascotaId in dueño.MascotasId)
             {
                 var mascota = _context.Mascotas.FindById(mascotaId);
@@ -88,7 +87,7 @@ public class DueñoService : IDueñoService
                 Mascotas = mascotasDtos
             });
         }
-    
+        
         return dueñosDtos;
     }
 
@@ -100,6 +99,7 @@ public class DueñoService : IDueñoService
             Edad = dto.Edad,
             Direccion = dto.Direccion,
             Telefono = dto.Telefono,
+            MascotasId = new List<int>() 
         };
         
         _context.Dueños.Insert(dueño);
@@ -130,7 +130,7 @@ public class DueñoService : IDueñoService
     public IEnumerable<MascotaDto> ObtenerMascotasDeDueño(int dueñoId)
     {
         var dueño = _context.Dueños.FindById(dueñoId);
-        if (dueño == null)
+        if (dueño?.MascotasId == null)
         {
             return new List<MascotaDto>();
         }

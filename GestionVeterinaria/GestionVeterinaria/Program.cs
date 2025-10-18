@@ -12,6 +12,11 @@ builder.Services.AddScoped<LiteDbContext>();
 
 // Registrar servicios
 builder.Services.AddScoped<IDueñoService, DueñoService>();
+builder.Services.AddScoped<IVeterinarioService, VeterinarioService>();
+builder.Services.AddScoped<IEspecialidadService, EspecialidadService>();
+builder.Services.AddScoped<IMascotaService, MascotaService>();
+builder.Services.AddScoped<IHistorialMedicoService, HistorialMedicoService>();
+builder.Services.AddScoped<IServicioMedicoService, ServicioMedicoService>();
 
 var app = builder.Build();
 

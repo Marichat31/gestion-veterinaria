@@ -1,6 +1,8 @@
-namespace GestionVeterinaria.Data.Models;
+using GestionVeterinaria.Dtos.HistorialMedico;
 
-public class Mascota
+namespace GestionVeterinaria.Dtos;
+
+public class MascotaDto
 {
     public int IdMascota { get; set; }
     public string Nombre { get; set; } = string.Empty;
@@ -9,6 +11,6 @@ public class Mascota
     public string Especie { get; set; } = string.Empty;
     public string Raza { get; set; } = string.Empty;
     
-    public int? DueñoId { get; set; }
-    public int? HistorialMedicoId { get; set; }
+    public DueñoDto? Dueño { get; set; }
+    public HistorialMedicoDto HistorialMedico { get; set; }
 }

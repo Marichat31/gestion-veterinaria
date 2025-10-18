@@ -7,5 +7,5 @@ public class Especialidad
     public string Descripcion { get; set; } = string.Empty;
     
     public int VeterinarioId { get; set; }
-    public Veterinario veterinario { get; set; }
+    public Veterinario veterinario { get; set; } =  new();
 }
