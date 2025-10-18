@@ -16,7 +16,7 @@ public class VeterinarioService : IVeterinarioService
         _context = context;
     }
 
-    public VeterinarioDTO ObtenerPorId(int id)
+    public VeterinarioDTO? ObtenerPorId(int id)
     {
         var veterinario = _context.Veterinarios.FindById(id);
         if (veterinario == null)
@@ -53,7 +53,7 @@ public class VeterinarioService : IVeterinarioService
 
     public IEnumerable<VeterinarioDTO> ObtenerTodos()
     {
-        var veterinarios = _context.Veterinarios.FindAll();
+        var veterinarios = _context.Veterinarios.FindAll().ToList();
         var veterinariosDtos = new List<VeterinarioDTO>();
         
         foreach (var veterinario in veterinarios)
@@ -96,6 +96,7 @@ public class VeterinarioService : IVeterinarioService
             Edad = dto.Edad,
             Direccion = dto.Direccion,
             Telefono = dto.Telefono,
+            EspecialidadesId = new List<int>()
         };
         _context.Veterinarios.Insert(veterinario);
         return true;

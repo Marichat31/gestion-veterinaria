@@ -33,7 +33,7 @@ public class DueñosController : ControllerBase
         return Ok(dueño);
     }
 
-    [HttpGet("{id}/mascotas")]
+    [HttpGet("{id:int}/mascotas")]
     public ActionResult<IEnumerable<MascotaDto>> GetMascotas(int id)
     {
         var dueño = _service.ObtenerPorId(id);

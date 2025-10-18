@@ -5,7 +5,7 @@ namespace GestionVeterinaria.Services.Interfaces;
 
 public interface IEspecialidadService
 {
-    EspecialidadDto ObtenerPorId(int id);
+    EspecialidadDto? ObtenerPorId(int id);
     IEnumerable<EspecialidadDto> ObtenerTodos();
     bool Crear(CrearEspecialidadDto especialidad);
     bool Actualizar(ActualizarEspecialidadDto especialidad);
