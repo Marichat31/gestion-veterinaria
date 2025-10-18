@@ -14,7 +14,7 @@ public class EspecialidadService : IEspecialidadService
         _context = context;
     }
 
-    public EspecialidadDto ObtenerPorId(int id)
+    public EspecialidadDto? ObtenerPorId(int id)
     {
         var especialidad = _context.Especialidades.FindById(id);
         if (especialidad == null)
@@ -32,7 +32,7 @@ public class EspecialidadService : IEspecialidadService
 
     public IEnumerable<EspecialidadDto> ObtenerTodos()
     {
-        var especialidades = _context.Especialidades.FindAll();
+        var especialidades = _context.Especialidades.FindAll().ToList();
         var especialidadDtos = new List<EspecialidadDto>();
 
         foreach (var especialidad in especialidades)
