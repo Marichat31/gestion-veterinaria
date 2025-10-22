@@ -17,6 +17,7 @@ builder.Services.AddScoped<IEspecialidadService, EspecialidadService>();
 builder.Services.AddScoped<IMascotaService, MascotaService>();
 builder.Services.AddScoped<IHistorialMedicoService, HistorialMedicoService>();
 builder.Services.AddScoped<IServicioMedicoService, ServicioMedicoService>();
+builder.Services.AddScoped<ITratamientoService,TratamientoService>();
 
 var app = builder.Build();
 

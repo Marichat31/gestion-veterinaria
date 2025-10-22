@@ -49,12 +49,24 @@ public class EspecialidadService : IEspecialidadService
 
     public bool Crear(CrearEspecialidadDto dto)
     {
+        var veterinario = _context.Veterinarios.FindById(dto.VeterinarioId);
+        if (veterinario == null)
+        {
+            return false;
+        }
         var especialidad = new Especialidad
         {
             Nombre = dto.NombreEspecialidad,
-            Descripcion = dto.DescripcionEspecialidad
+            Descripcion = dto.DescripcionEspecialidad,
+            VeterinarioId = dto.VeterinarioId
         };
         _context.Especialidades.Insert(especialidad);
+
+        if (!veterinario.EspecialidadesId.Contains(especialidad.EspecialidadId))
+        {
+            veterinario.EspecialidadesId.Add(especialidad.EspecialidadId);
+            _context.Veterinarios.Update(veterinario);
+        } 
         return true;
     }
 

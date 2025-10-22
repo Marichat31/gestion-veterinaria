@@ -10,4 +10,6 @@ public class CrearVeterinarioDTO
     
     public string Telefono { get; set; } = string.Empty;
 
+    public List<int> IdEspecialidades { get; set; } = new List<int>();
+
 }

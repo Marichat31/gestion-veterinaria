@@ -59,7 +59,7 @@ public class HistorialMedicoService : IHistorialMedicoService
                     Descripcion = servicio.Descripcion,
                     VeterinarioDto = new VeterinarioDTO
                     {
-                        IdVeterinario = veterinario.veterinarioId,
+                        Id= veterinario.IdPersona,
                         Nombre = veterinario.Nombre,
                         Edad = veterinario.Edad,
                         Direccion = veterinario.Direccion,
@@ -139,7 +139,7 @@ public class HistorialMedicoService : IHistorialMedicoService
                         Descripcion = servicio.Descripcion,
                         VeterinarioDto = new VeterinarioDTO
                         {
-                            IdVeterinario = veterinario.veterinarioId,
+                            Id= veterinario.IdPersona,
                             Nombre = veterinario.Nombre,
                             Edad = veterinario.Edad,
                             Direccion = veterinario.Direccion,

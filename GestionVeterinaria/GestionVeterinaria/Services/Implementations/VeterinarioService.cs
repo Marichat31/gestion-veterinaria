@@ -42,12 +42,12 @@ public class VeterinarioService : IVeterinarioService
         }
         return new VeterinarioDTO
         {
-            IdVeterinario = veterinario.veterinarioId,
+            Id = veterinario.IdPersona,
             Nombre = veterinario.Nombre,
             Edad = veterinario.Edad,
             Direccion = veterinario.Direccion,
             Telefono = veterinario.Telefono,
-            especialidades = especialidadesDtos
+            especialidades = especialidadesDtos,
         };
     }
 
@@ -76,7 +76,7 @@ public class VeterinarioService : IVeterinarioService
             }
             veterinariosDtos.Add(new VeterinarioDTO
             {
-                IdVeterinario = veterinario.veterinarioId,
+                Id= veterinario.IdPersona,
                 Nombre = veterinario.Nombre,
                 Edad = veterinario.Edad,
                 Direccion = veterinario.Direccion,
@@ -88,19 +88,47 @@ public class VeterinarioService : IVeterinarioService
         return veterinariosDtos;
     }
 
+    public IEnumerable<EspecialidadDto> ObtenerEspecialidadDeVeterinario(int veterinarioId)
+    {
+        var veterinario = _context.Veterinarios.FindById(veterinarioId);
+        if (veterinario?.EspecialidadesId == null)
+        {
+            return new List<EspecialidadDto>();
+        }
+
+        var especialidadesDtos = new List<EspecialidadDto>();
+
+        foreach (var especialidadId in veterinario.EspecialidadesId)
+        {
+            var especialidad = _context.Especialidades.FindById(especialidadId);
+            if (especialidad != null)
+            {
+                especialidadesDtos.Add(new EspecialidadDto()
+                {
+                    IdEspecialidad = especialidad.EspecialidadId,
+                    NombreEspecialidad = especialidad.Nombre,
+                    DescripcionEspecialidad = especialidad.Descripcion
+                });
+            }
+        }
+
+        return especialidadesDtos;
+    }
+
     public bool Crear(CrearVeterinarioDTO dto)
     {
+
         var veterinario = new Veterinario
         {
             Nombre = dto.Nombre,
             Edad = dto.Edad,
             Direccion = dto.Direccion,
             Telefono = dto.Telefono,
-            EspecialidadesId = new List<int>()
+            EspecialidadesId = dto.IdEspecialidades
         };
         _context.Veterinarios.Insert(veterinario);
-        return true;
-    }
+    return true;
+}
     public bool Actualizar(ActualizarVeterinarioDTO dto)
     {
         var veterinario = _context.Veterinarios.FindById(dto.Id);

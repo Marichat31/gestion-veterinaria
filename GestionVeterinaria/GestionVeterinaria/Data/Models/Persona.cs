@@ -1,3 +1,5 @@
+using LiteDB;
+
 namespace GestionVeterinaria.Data.Models;
 
 public abstract class Persona

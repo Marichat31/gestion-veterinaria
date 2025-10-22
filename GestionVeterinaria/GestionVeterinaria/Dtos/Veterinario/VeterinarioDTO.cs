@@ -2,7 +2,7 @@ namespace GestionVeterinaria.Dtos.Veterinario;
 
 public class VeterinarioDTO
 {
-    public int IdVeterinario { get; set; }
+    public int Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public int Edad { get; set; }
     public string Direccion { get; set; } = string.Empty;
