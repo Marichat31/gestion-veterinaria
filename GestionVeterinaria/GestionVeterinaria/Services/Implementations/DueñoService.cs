@@ -141,4 +141,47 @@ public class DueñoService : IDueñoService
 
         return mascotasDtos;
     }
+    public IEnumerable<DueñoDto> DueñosConMasDeNMascotas(int numero)
+    {
+        List<DueñoDto> resultado = new List<DueñoDto>();
+        var dueños = _context.Dueños.FindAll().ToList();
+        var todasMascotas = _context.Mascotas.FindAll().ToList();
+
+        foreach (var dueño in dueños)
+        {
+            int cantidadMascotas = dueño.MascotasId.Count;
+            if (cantidadMascotas > numero)
+            {
+                List<MascotaDto> mascotasDelDueño = new List<MascotaDto>();
+                foreach (var mascota in todasMascotas)
+                {
+                    if (dueño.MascotasId.Contains(mascota.IdMascota))
+                    {
+                        mascotasDelDueño.Add(new MascotaDto
+                        {
+                            IdMascota = mascota.IdMascota,
+                            Nombre = mascota.Nombre,
+                            Edad = mascota.Edad,
+                            Peso = mascota.Peso,
+                            Especie = mascota.Especie,
+                            Raza = mascota.Raza,
+                        });
+                    }
+                }
+                resultado.Add(new DueñoDto
+                {
+                    IdPersona = dueño.IdPersona,
+                    Nombre = dueño.Nombre,
+                    Edad = dueño.Edad,
+                    Direccion = dueño.Direccion,
+                    Telefono = dueño.Telefono,
+                    Mascotas =  mascotasDelDueño
+                });
+            }
+        }
+
+        return resultado;
+    }
+
+
 }

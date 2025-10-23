@@ -33,7 +33,28 @@ public class MascotasController : ControllerBase
         }
         return Ok(mascota);
     }
-
+    [HttpGet("VacunasVencidas")]
+    public ActionResult<IEnumerable<MascotaDto>> GetMascotasConVacunasVencidas()
+    {
+        try
+        {
+            var resultado = _service.MascotasConVacunaVencida();
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error: {ex.Message}");
+        }
+    }
+    [HttpGet("Buscar")]
+    public ActionResult<IEnumerable<MascotaDto>> FilterForAge(
+        [FromQuery] string especie, 
+        [FromQuery] int edadMin, 
+        [FromQuery] int edadMax)
+    {
+        var resultado = _service.FiltroPorEspecieyRango(especie, edadMin, edadMax);
+        return Ok(resultado);
+    }
     [HttpPost]
     public ActionResult Create(CrearMascotaDto dto)
     {

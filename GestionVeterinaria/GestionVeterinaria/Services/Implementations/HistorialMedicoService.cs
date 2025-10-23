@@ -4,6 +4,7 @@ using GestionVeterinaria.Dtos;
 using GestionVeterinaria.Dtos.HistorialMedico;
 using GestionVeterinaria.Dtos.ServicioMedico;
 using GestionVeterinaria.Dtos.Tratamientos;
+using GestionVeterinaria.Dtos.Vacuna;
 using GestionVeterinaria.Dtos.Veterinario;
 using GestionVeterinaria.Services.Interfaces;
 using GestionVeterinaria.Mappers;
@@ -167,5 +168,73 @@ public class HistorialMedicoService : IHistorialMedicoService
         }
 
         return false;
+    }
+    public HistorialMedicoDto ObtenerHistorialCompleto(int idMascota)
+    {
+        var mascota = _context.Mascotas.FindById(idMascota);
+        if (mascota == null)
+        {
+            return null;
+        }
+
+        var historial =
+            _context.HistorialesMedicos.FindOne(historial => historial.HistorialMedicoId == mascota.HistorialMedicoId);
+
+        if (historial == null)
+        {
+            historial = new HistorialMedico()
+            {
+                HistorialMedicoId = 0,
+                FechaCreacion = DateTime.Now
+            };
+            
+        }
+
+        var historialDto = new HistorialMedicoDto
+        {
+            HistorialMedicoId = historial.HistorialMedicoId,
+            Fecha = historial.FechaCreacion,
+            Mascota = new MascotaDto
+            {
+                IdMascota = mascota.IdMascota,
+                Nombre = mascota.Nombre,
+                Edad = mascota.Edad,
+                Peso = mascota.Peso,
+                Especie = mascota.Especie,
+                Raza = mascota.Raza
+            }
+
+        };
+        var todasVacunas = _context.Vacunas.FindAll();
+        foreach (var vacuna in todasVacunas)
+        {
+            if (vacuna.MascotaId == idMascota)
+            {
+                var vacunaDto = new VacunaDto
+                {
+                    VacunaId = vacuna.VacunaId,
+                    Nombre = vacuna.Nombre,
+                    FechaAplicacion = vacuna.FechaAplicacion,
+                };
+                //historialDto.Vacunas.Add(vacunaDto);
+            }
+            
+        }
+
+        var todosServicios = _context.ServiciosMedicos.FindAll();
+        foreach (var servicio in todosServicios)
+        {
+            if (servicio.MascotaId == idMascota)
+            {
+                var servicioDto = new ServicioMedicoDto
+                {
+                    ServicioMedicoId = servicio.ServicioMedicoId,
+                    Precio = servicio.Precio,
+                    Fecha = servicio.Fecha,
+                    Descripcion = servicio.Descripcion
+                };
+            }
+        }
+        return historialDto;
     }
 }

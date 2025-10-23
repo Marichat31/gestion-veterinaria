@@ -231,4 +231,72 @@ public class MascotaService : IMascotaService
     {
         throw new NotImplementedException();
     }
+    
+    
+    public IEnumerable<MascotaDto> MascotasConVacunaVencida()
+    {
+        var resultado = new List<MascotaDto>();
+        var mascotas = _context.Mascotas.FindAll().ToList();
+        var vacunas = _context.Vacunas.FindAll().ToList();
+        foreach (var mascota in mascotas)
+        {
+            bool tieneVencida = false;
+            foreach (var vacuna in vacunas)
+            {
+                if (vacuna.MascotaId == mascota.IdMascota)
+                {
+                    if (vacuna.FechaAplicacion < DateTime.Now.AddYears(-1))
+                    {
+                        tieneVencida = true;
+                        break;
+                    }
+                }
+            }
+
+            if (tieneVencida)
+            {
+                resultado.Add(new MascotaDto
+                {
+                    IdMascota = mascota.IdMascota,
+                    Nombre = mascota.Nombre,
+                    Edad = mascota.Edad,
+                    Peso = mascota.Peso,
+                    Especie = mascota.Especie,
+                    Raza = mascota.Raza,
+                });
+            }
+
+            
+        }
+        return resultado;
+    }
+
+    public IEnumerable<MascotaDto> FiltroPorEspecieyRango(int idMascota)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    public IEnumerable<MascotaDto> FiltroPorEspecieyRango(string especie, int edadMin, int edadMax)
+    {
+        var todasMascotas = _context.Mascotas.FindAll().ToList();
+        var resultado = new List<MascotaDto>();
+        foreach (var mascota in todasMascotas)
+        {
+            if (mascota.Especie.Equals(especie, StringComparison.OrdinalIgnoreCase) && mascota.Edad >= edadMin &&
+                mascota.Edad <= edadMax)
+            {
+                resultado.Add(new MascotaDto
+                {
+                    IdMascota = mascota.IdMascota,
+                    Nombre = mascota.Nombre,
+                    Edad = mascota.Edad,
+                    Peso = mascota.Peso,
+                    Especie = mascota.Especie,
+                    Raza = mascota.Raza,
+                });
+            }
+        }
+        return resultado;
+    } 
 }

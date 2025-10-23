@@ -45,7 +45,21 @@ public class DueñosController : ControllerBase
         var mascotas = _service.ObtenerMascotasDeDueño(id);
         return Ok(mascotas);
     }
-
+     
+    [HttpGet("ConMasDe/{numero:int}")]
+    public ActionResult<IEnumerable<DueñoDto>>GetMoreMascotas([FromRoute] int numero)
+    {
+        try
+        {
+            var resultado = _service.DueñosConMasDeNMascotas(numero);
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500, $"Error: {ex.Message}");
+        }
+    }
     [HttpPost]
     public ActionResult Create(CrearDueñoDto dto)
     {

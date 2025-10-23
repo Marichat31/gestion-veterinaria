@@ -32,6 +32,15 @@ public class HistorialesMedicosController : ControllerBase
         }
         return Ok(historial);
     }
+    [HttpGet("{id:int}/historial-completo")]
+    public ActionResult<HistorialMedicoDto> GetHistorialCompleto(int id)
+    {
+        var resultado = _service.ObtenerHistorialCompleto(id);
+        if (resultado == null)
+            return NotFound($"No se encontró el historial de la mascota con ID {id}");
+
+        return Ok(resultado);
+    }
 
     [HttpPost]
     public ActionResult Create(CrearHistorialMedicoDto dto)
