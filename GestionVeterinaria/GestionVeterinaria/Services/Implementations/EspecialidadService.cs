@@ -2,77 +2,73 @@ using GestionVeterinaria.Data;
 using GestionVeterinaria.Data.Models;
 using GestionVeterinaria.Dtos;
 using GestionVeterinaria.Services.Interfaces;
+using GestionVeterinaria.Mappers;
 
 namespace GestionVeterinaria.Services.Implementations;
 
 public class EspecialidadService : IEspecialidadService
 {
     private readonly LiteDbContext _context;
+    private readonly CrudGenerico<Especialidad> _especialidadCrud;
+    private readonly CrudGenerico<Veterinario> _veterinarioCrud;
 
     public EspecialidadService(LiteDbContext context)
     {
         _context = context;
+        _especialidadCrud = new CrudGenerico<Especialidad>(context, context.Especialidades);
+        _veterinarioCrud = new CrudGenerico<Veterinario>(context, context.Veterinarios);
     }
 
     public EspecialidadDto? ObtenerPorId(int id)
     {
-        var especialidad = _context.Especialidades.FindById(id);
+        var especialidad = _especialidadCrud.ObtenerPorId(id);
         if (especialidad == null)
         {
             return null;
         }
 
-        return new EspecialidadDto
-        {
-            IdEspecialidad = especialidad.EspecialidadId,
-            NombreEspecialidad = especialidad.Nombre,
-            DescripcionEspecialidad = especialidad.Descripcion
-        };
+        return DTOMapper.MapEspecialidad(especialidad);
     }
 
     public IEnumerable<EspecialidadDto> ObtenerTodos()
     {
-        var especialidades = _context.Especialidades.FindAll().ToList();
+        var especialidades = _especialidadCrud.ObtenerTodos().ToList();
         var especialidadDtos = new List<EspecialidadDto>();
 
         foreach (var especialidad in especialidades)
         {
-            especialidadDtos.Add(new  EspecialidadDto
-            {
-               IdEspecialidad = especialidad.EspecialidadId,
-               NombreEspecialidad = especialidad.Nombre,
-               DescripcionEspecialidad = especialidad.Descripcion
-            });
+            especialidadDtos.Add(DTOMapper.MapEspecialidad(especialidad));
         }
         return especialidadDtos;
     }
 
     public bool Crear(CrearEspecialidadDto dto)
-    {
-        var veterinario = _context.Veterinarios.FindById(dto.VeterinarioId);
+    { 
+        /*var veterinario = _veterinarioCrud.ObtenerPorId(dto.VeterinarioId);
         if (veterinario == null)
         {
             return false;
-        }
+        }*/
+        
         var especialidad = new Especialidad
         {
             Nombre = dto.NombreEspecialidad,
             Descripcion = dto.DescripcionEspecialidad,
-            VeterinarioId = dto.VeterinarioId
+            //VeterinarioId = dto.VeterinarioId
         };
-        _context.Especialidades.Insert(especialidad);
-
+        _especialidadCrud.Crear(especialidad);
+/*
         if (!veterinario.EspecialidadesId.Contains(especialidad.EspecialidadId))
         {
             veterinario.EspecialidadesId.Add(especialidad.EspecialidadId);
-            _context.Veterinarios.Update(veterinario);
-        } 
+            _veterinarioCrud.Actualizar(veterinario);
+        } */
         return true;
     }
 
     public bool Actualizar(ActualizarEspecialidadDto dto)
     {
-        var especialidad = _context.Especialidades.FindById(dto.Id);
+        var especialidad = _especialidadCrud.ObtenerPorId(dto.Id);
         if (especialidad == null)
         {
             return false;
@@ -80,10 +76,11 @@ public class EspecialidadService : IEspecialidadService
 
         especialidad.Nombre = dto.NombreEspecialidad;
         especialidad.Descripcion = dto.DescripcionEspecialidad;   
-        return _context.Especialidades.Update(especialidad);
+        return _especialidadCrud.Actualizar(especialidad);
     }
+    
     public bool Eliminar(int id)
     {
-        return _context.Especialidades.Delete(id);
+        return _especialidadCrud.Eliminar(id);
     }
 }

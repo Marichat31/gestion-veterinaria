@@ -5,36 +5,43 @@ using GestionVeterinaria.Dtos.ServicioMedico;
 using GestionVeterinaria.Dtos.Tratamientos;
 using GestionVeterinaria.Dtos.Veterinario;
 using GestionVeterinaria.Services.Interfaces;
+using GestionVeterinaria.Mappers;
 
 namespace GestionVeterinaria.Services.Implementations;
 
 public class ServicioMedicoService : IServicioMedicoService
 {
     private readonly LiteDbContext _context;
+    private readonly CrudGenerico<ServicioMedico> _servicioCrud;
+    private readonly CrudGenerico<Veterinario> _veterinarioCrud;
+    private readonly CrudGenerico<Mascota> _mascotaCrud;
+    private readonly CrudGenerico<Tratamiento> _tratamientoCrud;
+    private readonly CrudGenerico<HistorialMedico> _historialMedicoCrud;
 
     public ServicioMedicoService(LiteDbContext context)
     {
         _context = context;
+        _servicioCrud = new CrudGenerico<ServicioMedico>(context, context.ServiciosMedicos);
+        _veterinarioCrud = new CrudGenerico<Veterinario>(context, context.Veterinarios);
+        _mascotaCrud = new CrudGenerico<Mascota>(context, context.Mascotas);
+        _tratamientoCrud = new CrudGenerico<Tratamiento>(context, context.Tratamientos);
+        _historialMedicoCrud = new CrudGenerico<HistorialMedico>(context, context.HistorialesMedicos);
     }
 
     public ServicioMedicoDto? ObtenerPorId(int id)
     {
-        var servicio = _context.ServiciosMedicos.FindById(id);
+        var servicio = _servicioCrud.ObtenerPorId(id);
         if (servicio == null) return null;
 
-        var veterinario = _context.Veterinarios.FindById(servicio.VeterinariaId);
-        var mascota = _context.Mascotas.FindById(servicio.MascotaId);
+        var veterinario = _veterinarioCrud.ObtenerPorId(servicio.VeterinariaId);
+        var mascota = _mascotaCrud.ObtenerPorId(servicio.MascotaId);
         var tratamientos = new List<TratamientoDto>();
         foreach (var tId in servicio.TratamientosId)
         {
-            var t = _context.Tratamientos.FindById(tId);
+            var t = _tratamientoCrud.ObtenerPorId(tId);
             if (t != null)
             {
-                /*
-                tratamientos.Add(new TratamientoDto
-                {
-                     
-                });*/
+                tratamientos.Add(DTOMapper.MapTratamiento(t));
             }
         }
 
@@ -44,49 +51,28 @@ public class ServicioMedicoService : IServicioMedicoService
             Precio = servicio.Precio,
             Fecha = servicio.Fecha,
             Descripcion = servicio.Descripcion,
-            VeterinarioDto = new VeterinarioDTO
-            {
-                Id= veterinario.IdPersona,
-                Nombre = veterinario.Nombre,
-                Edad = veterinario.Edad,
-                Direccion = veterinario.Direccion,
-                Telefono = veterinario.Telefono
-            },
-            MascotaDto = new MascotaDto
-            {
-                IdMascota = mascota.IdMascota,
-                Nombre = mascota.Nombre,
-                Edad = mascota.Edad,
-                Peso = mascota.Peso,
-                Especie = mascota.Especie,
-                Raza = mascota.Raza
-            },
+            VeterinarioDto = veterinario != null ? DTOMapper.MapVeterinario(veterinario) : null,
+            MascotaDto = mascota != null ? DTOMapper.MapMascota(mascota) : null,
             TratamientoDtos = tratamientos
         };
     }
 
     public IEnumerable<ServicioMedicoDto> ObtenerTodos()
     {
-        var servicios = _context.ServiciosMedicos.FindAll().ToList();
+        var servicios = _servicioCrud.ObtenerTodos().ToList();
         var lista = new List<ServicioMedicoDto>();
 
         foreach (var servicio in servicios)
         {
-            var veterinario = _context.Veterinarios.FindById(servicio.VeterinariaId);
-            var mascota = _context.Mascotas.FindById(servicio.MascotaId);
+            var veterinario = _veterinarioCrud.ObtenerPorId(servicio.VeterinariaId);
+            var mascota = _mascotaCrud.ObtenerPorId(servicio.MascotaId);
             var tratamientos = new List<TratamientoDto>();
             foreach (var tId in servicio.TratamientosId)
             {
-                var t = _context.Tratamientos.FindById(tId);
+                var t = _tratamientoCrud.ObtenerPorId(tId);
                 if (t != null)
                 {
-                    /*
-                    tratamientos.Add(new TratamientoDto
-                    {
-                        IdTratamiento = t.IdTratamiento,
-                        Nombre = t.Nombre,
-                        Descripcion = t.Descripcion
-                    });*/
+                    tratamientos.Add(DTOMapper.MapTratamiento(t));
                 }
             }
 
@@ -96,23 +82,8 @@ public class ServicioMedicoService : IServicioMedicoService
                 Precio = servicio.Precio,
                 Fecha = servicio.Fecha,
                 Descripcion = servicio.Descripcion,
-                VeterinarioDto = new VeterinarioDTO
-                {
-                    Id = veterinario.IdPersona,
-                    Nombre = veterinario.Nombre,
-                    Edad = veterinario.Edad,
-                    Direccion = veterinario.Direccion,
-                    Telefono = veterinario.Telefono
-                },
-                MascotaDto = new MascotaDto
-                {
-                    IdMascota = mascota.IdMascota,
-                    Nombre = mascota.Nombre,
-                    Edad = mascota.Edad,
-                    Peso = mascota.Peso,
-                    Especie = mascota.Especie,
-                    Raza = mascota.Raza
-                },
+                VeterinarioDto = veterinario != null ? DTOMapper.MapVeterinario(veterinario) : null,
+                MascotaDto = mascota != null ? DTOMapper.MapMascota(mascota) : null,
                 TratamientoDtos = tratamientos
             });
         }
@@ -129,26 +100,42 @@ public class ServicioMedicoService : IServicioMedicoService
             Descripcion = dto.Descripcion,
             VeterinariaId = dto.VeterinarioId,
             MascotaId = dto.MascotaId,
-            TratamientosId = new List<int>()
+            TratamientosId = dto.TratamientosId
         };
-        _context.ServiciosMedicos.Insert(servicio);
+        
+        var creado = _servicioCrud.Crear(servicio);
+        if (!creado) return false;
+
+        var historialesMascota = _historialMedicoCrud.ObtenerTodos()
+            .Where(h => h.MascotaId == servicio.MascotaId)
+            .ToList();
+
+        foreach (var historial in historialesMascota)
+        {
+            if (!historial.ServiciosMedicosId.Contains(servicio.ServicioMedicoId))
+            {
+                historial.ServiciosMedicosId.Add(servicio.ServicioMedicoId);
+                _historialMedicoCrud.Actualizar(historial);
+            }
+        }
+
         return true;
     }
 
     public bool Actualizar(ActualizarServicioMedicoDto dto)
     {
-        var servicio = _context.ServiciosMedicos.FindById(dto.VeterinarioId);
+        var servicio = _servicioCrud.ObtenerPorId(dto.VeterinarioId);
         if (servicio == null) return false;
 
         servicio.Precio = dto.Precio;
         servicio.Descripcion = dto.Descripcion;
         servicio.VeterinariaId = dto.VeterinarioId;
 
-        return _context.ServiciosMedicos.Update(servicio);
+        return _servicioCrud.Actualizar(servicio);
     }
 
     public bool Eliminar(int id)
     {
-        return _context.ServiciosMedicos.Delete(id);
+        return _servicioCrud.Eliminar(id);
     }
 }

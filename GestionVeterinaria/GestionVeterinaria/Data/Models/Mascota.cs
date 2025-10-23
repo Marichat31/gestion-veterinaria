@@ -9,6 +9,7 @@ public class Mascota
     public string Especie { get; set; } = string.Empty;
     public string Raza { get; set; } = string.Empty;
     
-    public int? DueñoId { get; set; }
+    public int DueñoId { get; set; }
     public int? HistorialMedicoId { get; set; }
+    public List<int> VacunasId { get; set; } = new List<int>();
 }

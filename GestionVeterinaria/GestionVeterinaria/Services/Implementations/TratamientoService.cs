@@ -5,46 +5,37 @@ using GestionVeterinaria.Dtos.ServicioMedico;
 using GestionVeterinaria.Dtos.Tratamientos;
 using GestionVeterinaria.Dtos.Veterinario;
 using GestionVeterinaria.Services.Interfaces;
+using GestionVeterinaria.Mappers;
 
 namespace GestionVeterinaria.Services.Implementations;
 
 public class TratamientoService : ITratamientoService
 {
     private readonly LiteDbContext _context;
+    private readonly CrudGenerico<Tratamiento> _tratamientoCrud;
+
     public TratamientoService(LiteDbContext context)
     {
         _context = context;
+        _tratamientoCrud = new CrudGenerico<Tratamiento>(context, context.Tratamientos);
     }
     
     public TratamientoDto? ObtenerPorId(int id)
     {
-        var tratamiento = _context.Tratamientos.FindById(id);
+        var tratamiento = _tratamientoCrud.ObtenerPorId(id);
         if (tratamiento == null) return null;
-        
 
-        return new TratamientoDto
-        {
-            TratamientoId = tratamiento.TratamientoId,
-            NombreTratamiento = tratamiento.NombreTratamiento,
-            TipoTratamiento = tratamiento.TipoTratamiento,
-            DescripcionTratamiento = tratamiento.DescripcionTratamiento,
-        };
+        return DTOMapper.MapTratamiento(tratamiento);
     }
 
     public IEnumerable<TratamientoDto> ObtenerTodos()
     {
-        var tratamientos = _context.Tratamientos.FindAll().ToList();
+        var tratamientos = _tratamientoCrud.ObtenerTodos().ToList();
         var lista = new List<TratamientoDto>();
 
         foreach (var tratamiento in tratamientos)
         {
-            lista.Add(new TratamientoDto
-            {
-                TratamientoId = tratamiento.TratamientoId,
-                NombreTratamiento = tratamiento.NombreTratamiento,
-                TipoTratamiento = tratamiento.TipoTratamiento,
-                DescripcionTratamiento = tratamiento.DescripcionTratamiento,
-            });
+            lista.Add(DTOMapper.MapTratamiento(tratamiento));
         }
 
         return lista;
@@ -58,13 +49,12 @@ public class TratamientoService : ITratamientoService
             DescripcionTratamiento = dto.DescripcionTratamiento,
             TipoTratamiento = dto.TipoTratamiento,
         };
-        _context.Tratamientos.Insert(tratamiento);
-        return true;
+        return _tratamientoCrud.Crear(tratamiento);
     }
 
     public bool Actualizar(ActualizarTratamientoDto dto)
     {
-        var tratamiento = _context.Tratamientos.FindById(dto.TratamientoId);
+        var tratamiento = _tratamientoCrud.ObtenerPorId(dto.TratamientoId);
         if (tratamiento == null)
         {
             return false;
@@ -73,11 +63,12 @@ public class TratamientoService : ITratamientoService
         tratamiento.NombreTratamiento = dto.NombreTratamiento;
         tratamiento.DescripcionTratamiento = dto.DescripcionTratamiento;
         tratamiento.TipoTratamiento = dto.TipoTratamiento;
-        return true;
+        
+        return _tratamientoCrud.Actualizar(tratamiento);
     }
 
     public bool Eliminar(int id)
     {
-        return _context.Tratamientos.FindById(id) != null;
+        return _tratamientoCrud.Eliminar(id);
     }
 }

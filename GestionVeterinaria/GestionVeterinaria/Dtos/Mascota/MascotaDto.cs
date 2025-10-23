@@ -1,4 +1,5 @@
 using GestionVeterinaria.Dtos.HistorialMedico;
+using GestionVeterinaria.Dtos.Vacuna;
 
 namespace GestionVeterinaria.Dtos;
 
@@ -13,4 +14,5 @@ public class MascotaDto
     
     public DueñoDto? Dueño { get; set; }
     public HistorialMedicoDto HistorialMedico { get; set; }
+    public List<VacunaDto>? Vacunas { get; set; }
 }

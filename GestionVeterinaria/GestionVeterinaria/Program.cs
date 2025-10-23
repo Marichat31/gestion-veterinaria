@@ -18,6 +18,8 @@ builder.Services.AddScoped<IMascotaService, MascotaService>();
 builder.Services.AddScoped<IHistorialMedicoService, HistorialMedicoService>();
 builder.Services.AddScoped<IServicioMedicoService, ServicioMedicoService>();
 builder.Services.AddScoped<ITratamientoService,TratamientoService>();
+builder.Services.AddScoped<IVacunaService, VacunaService>();
+
 
 var app = builder.Build();
 

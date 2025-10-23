@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionVeterinaria.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/duenos")]
 public class DueñosController : ControllerBase
 {
     private readonly IDueñoService _service;
@@ -22,7 +22,7 @@ public class DueñosController : ControllerBase
         return Ok(dueños);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public ActionResult<DueñoDto> GetById(int id)
     {
         var dueño = _service.ObtenerPorId(id);
