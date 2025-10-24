@@ -8,4 +8,6 @@ public class CrearServicioMedicoDto
 
     public int VeterinarioId { get; set; } 
     public int MascotaId { get; set; } 
+    
+    public List<int> TratamientosId { get; set; }
 }

@@ -44,4 +44,5 @@ public class LiteDbContext
     public ILiteCollection<ServicioMedico> ServiciosMedicos => _database.GetCollection<ServicioMedico>("ServiciosMedicos");
     public ILiteCollection<Tratamiento> Tratamientos => _database.GetCollection<Tratamiento>("Tratamientos");
     public ILiteCollection<HistorialMedico> HistorialesMedicos => _database.GetCollection<HistorialMedico>("HistorialesMedicos");
+    public ILiteCollection<Vacuna> Vacunas => _database.GetCollection<Vacuna>("vacunas");
 }

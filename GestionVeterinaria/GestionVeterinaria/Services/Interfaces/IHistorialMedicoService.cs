@@ -11,4 +11,7 @@ public interface IHistorialMedicoService
     bool Crear(CrearHistorialMedicoDto dueño);
     bool Eliminar(int id);
     bool AddServicioMedico(int historialMedicoId, int  servicioMedicoId);
+    
+    HistorialMedicoDto ObtenerHistorialCompleto(int id);
+    
 }

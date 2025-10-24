@@ -11,4 +11,5 @@ public interface IDueñoService
     bool Actualizar(ActualizarDueñoDto dueño);
     bool Eliminar(int id);
     IEnumerable<MascotaDto> ObtenerMascotasDeDueño(int dueñoId);
+    IEnumerable<DueñoDto> DueñosConMasDeNMascotas(int numero);
 }

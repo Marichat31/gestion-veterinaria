@@ -8,6 +8,6 @@ public class ActualizarVeterinarioDTO
     public string Direccion { get; set; } = string.Empty;
     public string Telefono { get; set; } = string.Empty;
     
-    public int IdEspecialidad { get; set; }
+    public List<int> IdEspecialidad { get; set; }
     
 }

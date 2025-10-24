@@ -11,4 +11,6 @@ public interface IMascotaService
     bool Actualizar(ActualizarMascotaDto dto);
     bool Eliminar(int id);
     bool AgregarMascota(int idDueño, int idMascota);
+    public IEnumerable<MascotaDto> MascotasConVacunaVencida();
+    IEnumerable<MascotaDto> FiltroPorEspecieyRango(string especie, int edadMin, int edadMax);
 }

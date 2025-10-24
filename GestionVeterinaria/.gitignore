@@ -10,7 +10,7 @@ obj/
 **/obj/
 
 # LiteDB
-*.db
+# *.db
 *.db-journal
 
 # IDE

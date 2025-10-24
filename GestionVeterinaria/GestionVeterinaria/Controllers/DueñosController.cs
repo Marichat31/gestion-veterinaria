@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionVeterinaria.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/duenos")]
 public class DueñosController : ControllerBase
 {
     private readonly IDueñoService _service;
@@ -22,7 +22,7 @@ public class DueñosController : ControllerBase
         return Ok(dueños);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public ActionResult<DueñoDto> GetById(int id)
     {
         var dueño = _service.ObtenerPorId(id);
@@ -45,7 +45,21 @@ public class DueñosController : ControllerBase
         var mascotas = _service.ObtenerMascotasDeDueño(id);
         return Ok(mascotas);
     }
-
+     
+    [HttpGet("ConMasDe/{numero:int}")]
+    public ActionResult<IEnumerable<DueñoDto>>GetMoreMascotas([FromRoute] int numero)
+    {
+        try
+        {
+            var resultado = _service.DueñosConMasDeNMascotas(numero);
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return StatusCode(500, $"Error: {ex.Message}");
+        }
+    }
     [HttpPost]
     public ActionResult Create(CrearDueñoDto dto)
     {

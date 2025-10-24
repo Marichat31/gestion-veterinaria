@@ -1,21 +1,30 @@
 using GestionVeterinaria.Data;
 using GestionVeterinaria.Data.Models;
 using GestionVeterinaria.Dtos;
+using GestionVeterinaria.Dtos.Vacuna;
 using GestionVeterinaria.Services.Interfaces;
+using GestionVeterinaria.Mappers;
 
 namespace GestionVeterinaria.Services.Implementations;
 
 public class DueñoService : IDueñoService
 {
     private readonly LiteDbContext _context;
+    private readonly CrudGenerico<Dueño> _dueñoCrud;
+    private readonly CrudGenerico<Mascota> _mascotaCrud;
+    private readonly CrudGenerico<Vacuna> _vacunaCrud;
 
     public DueñoService(LiteDbContext context)
     {
         _context = context;
+        _dueñoCrud = new CrudGenerico<Dueño>(context, context.Dueños);
+        _mascotaCrud = new CrudGenerico<Mascota>(context, context.Mascotas);
+        _vacunaCrud = new  CrudGenerico<Vacuna>(context, context.Vacunas);
     }
+
     public DueñoDto? ObtenerPorId(int id)
     {
-        var dueño = _context.Dueños.FindById(id);
+        var dueño = _dueñoCrud.ObtenerPorId(id);
         if (dueño == null)
         {
             return null;
@@ -25,35 +34,22 @@ public class DueñoService : IDueñoService
 
         foreach (var mascotaId in dueño.MascotasId)
         {
-            var mascota = _context.Mascotas.FindById(mascotaId);
+            var mascota = _mascotaCrud.ObtenerPorId(mascotaId);
             if (mascota != null)
             {
-                mascotasDtos.Add(new MascotaDto
-                {
-                    IdMascota = mascota.IdMascota,
-                    Nombre = mascota.Nombre,
-                    Edad = mascota.Edad,
-                    Peso = mascota.Peso,
-                    Especie = mascota.Especie ,
-                    Raza = mascota.Raza
-                });
+                mascotasDtos.Add(DTOMapper.MapMascota(mascota));
             }
         }
 
-        return new DueñoDto
-        {
-            IdPersona = dueño.IdPersona,
-            Nombre = dueño.Nombre,
-            Edad = dueño.Edad,
-            Direccion = dueño.Direccion,
-            Telefono = dueño.Telefono,
-            Mascotas = mascotasDtos
-        };
+        var dueñoDto = DTOMapper.MapDueño(dueño);
+        dueñoDto.Mascotas = mascotasDtos;
+        
+        return dueñoDto;
     }
 
     public IEnumerable<DueñoDto> ObtenerTodos()
     {
-        var dueños = _context.Dueños.FindAll().ToList();
+        var dueños = _dueñoCrud.ObtenerTodos().ToList();
         var dueñosDtos = new List<DueñoDto>();
         
         foreach (var dueño in dueños)
@@ -62,30 +58,28 @@ public class DueñoService : IDueñoService
 
             foreach (var mascotaId in dueño.MascotasId)
             {
-                var mascota = _context.Mascotas.FindById(mascotaId);
+                var vacunas = _vacunaCrud.ObtenerTodos();
+                var vacunasDtos = new List<VacunaDto>();
+
+                foreach (var vacuna in vacunas)
+                {
+                    if (vacuna.MascotaId == mascotaId)
+                    {
+                        vacunasDtos.Add(DTOMapper.MapVacuna(vacuna));
+                    }
+                }
+                
+                
+                var mascota = _mascotaCrud.ObtenerPorId(mascotaId);
                 if (mascota != null)
                 {
-                    mascotasDtos.Add(new MascotaDto
-                    {
-                        IdMascota = mascota.IdMascota,
-                        Nombre = mascota.Nombre,
-                        Edad = mascota.Edad,
-                        Peso = mascota.Peso,
-                        Especie = mascota.Especie,
-                        Raza = mascota.Raza
-                    });
+                    mascotasDtos.Add(DTOMapper.MapMascota(mascota, vacunasDtos));
                 }
             }
 
-            dueñosDtos.Add(new DueñoDto
-            {
-                IdPersona = dueño.IdPersona,
-                Nombre = dueño.Nombre,
-                Edad = dueño.Edad,
-                Direccion = dueño.Direccion,
-                Telefono = dueño.Telefono,
-                Mascotas = mascotasDtos
-            });
+            var dueñoDto = DTOMapper.MapDueño(dueño);
+            dueñoDto.Mascotas = mascotasDtos;
+            dueñosDtos.Add(dueñoDto);
         }
         
         return dueñosDtos;
@@ -102,13 +96,12 @@ public class DueñoService : IDueñoService
             MascotasId = new List<int>() 
         };
         
-        _context.Dueños.Insert(dueño);
-        return true;
+        return _dueñoCrud.Crear(dueño);
     }
 
     public bool Actualizar(ActualizarDueñoDto dto)
     {
-        var dueño = _context.Dueños.FindById(dto.Id);
+        var dueño = _dueñoCrud.ObtenerPorId(dto.Id);
         if (dueño == null)
         {
             return false;
@@ -119,17 +112,17 @@ public class DueñoService : IDueñoService
         dueño.Direccion = dto.Direccion;
         dueño.Telefono = dto.Telefono;
         
-        return _context.Dueños.Update(dueño);
+        return _dueñoCrud.Actualizar(dueño);
     }
 
     public bool Eliminar(int id)
     {
-        return _context.Dueños.Delete(id);
+        return _dueñoCrud.Eliminar(id);
     }
 
     public IEnumerable<MascotaDto> ObtenerMascotasDeDueño(int dueñoId)
     {
-        var dueño = _context.Dueños.FindById(dueñoId);
+        var dueño = _dueñoCrud.ObtenerPorId(dueñoId);
         if (dueño?.MascotasId == null)
         {
             return new List<MascotaDto>();
@@ -139,21 +132,56 @@ public class DueñoService : IDueñoService
 
         foreach (var mascotaId in dueño.MascotasId)
         {
-            var mascota = _context.Mascotas.FindById(mascotaId);
+            var mascota = _mascotaCrud.ObtenerPorId(mascotaId);
             if (mascota != null)
             {
-                mascotasDtos.Add(new MascotaDto
-                {
-                    IdMascota = mascota.IdMascota,
-                    Nombre = mascota.Nombre,
-                    Edad = mascota.Edad,
-                    Peso = mascota.Peso,
-                    Especie = mascota.Especie,
-                    Raza = mascota.Raza
-                });
+                mascotasDtos.Add(DTOMapper.MapMascota(mascota));
             }
         }
 
         return mascotasDtos;
     }
+    public IEnumerable<DueñoDto> DueñosConMasDeNMascotas(int numero)
+    {
+        List<DueñoDto> resultado = new List<DueñoDto>();
+        var dueños = _context.Dueños.FindAll().ToList();
+        var todasMascotas = _context.Mascotas.FindAll().ToList();
+
+        foreach (var dueño in dueños)
+        {
+            int cantidadMascotas = dueño.MascotasId.Count;
+            if (cantidadMascotas > numero)
+            {
+                List<MascotaDto> mascotasDelDueño = new List<MascotaDto>();
+                foreach (var mascota in todasMascotas)
+                {
+                    if (dueño.MascotasId.Contains(mascota.IdMascota))
+                    {
+                        mascotasDelDueño.Add(new MascotaDto
+                        {
+                            IdMascota = mascota.IdMascota,
+                            Nombre = mascota.Nombre,
+                            Edad = mascota.Edad,
+                            Peso = mascota.Peso,
+                            Especie = mascota.Especie,
+                            Raza = mascota.Raza,
+                        });
+                    }
+                }
+                resultado.Add(new DueñoDto
+                {
+                    IdPersona = dueño.IdPersona,
+                    Nombre = dueño.Nombre,
+                    Edad = dueño.Edad,
+                    Direccion = dueño.Direccion,
+                    Telefono = dueño.Telefono,
+                    Mascotas =  mascotasDelDueño
+                });
+            }
+        }
+
+        return resultado;
+    }
+
+
 }
